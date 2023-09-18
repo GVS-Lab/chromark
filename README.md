@@ -1,8 +1,8 @@
-# Single-cell imaging-AI based chromatin biomarkers for proton therapy efficacy in tumor patients using liquid biopsies
+# Single-cell imaging-AI based chromatin biomarkers for diagnosis and therapy evaluation in tumor patients using liquid biopsies
 
 The repository contains the code used to run the analyses presented in our publication:
 
-> [**Single-cell imaging-AI based chromatin biomarkers for proton therapy efficacy in tumor patients using liquid biopsies (Under review)**]()
+> [**Single-cell imaging-AI based chromatin biomarkers for diagnosis and therapy evaluation in tumor patients using liquid biopsies (Under review)**]()
 
 <p align="center" width="100%">
   <b>Chromatin organization of PBMCs reflects the presence of tumor signals</b> <br>
@@ -14,7 +14,7 @@ The repository contains the code used to run the analyses presented in our publi
 # System requirements
 
 The code has been developed and executed on a HP Z4 workstation running Ubuntu 20.04.5 LTS with a Intel(R)
-Xeon(R) W-2255 CPU with 3.70 GHz, 128GB RAM and Python v3.8 installed.. Note that the code can also be run for machines with less available RAM.
+Xeon(R) W-2255 CPU with 3.70 GHz, 128GB RAM and Python v3.8.10 installed.. Note that the code can also be run for machines with less available RAM.
 
 ## Installation
 
@@ -24,7 +24,7 @@ the **requirements.txt** file:
 ```
 git clone https://github.com/GVS-Lab/immune_cell_project.git
 
-conda create --name icp python=3.8
+conda create --name icp python=3.8.10
 conda activate icp
 pip install -r requirements.txt
 ```
@@ -51,6 +51,7 @@ While all other parameters are recommended to be kept the channel parameters sho
 
 All results presented in the main and supplemental figures can be obtained by running the respective jupyter notebooks located in ``jupyter/notebooks/figures``. To run those notebooks, please start the jupyter server via
 ```
+conda activate icp
 jupyter notebook
 ```
 navigate to the notebook and run all cells.
