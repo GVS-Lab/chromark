@@ -27,6 +27,7 @@ git clone https://github.com/GVS-Lab/chromark.git
 cd chromark
 conda create --name icp python=3.8.10
 conda activate icp
+pip install setuptools==49.6.0
 pip install -r requirements.txt
 ```
 
