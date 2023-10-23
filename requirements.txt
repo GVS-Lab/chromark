@@ -125,7 +125,6 @@ scikit-misc==0.1.4
 scipy==1.6.0
 seaborn==0.11.2
 Send2Trash==1.5.0
-setuptools==49.6.0.post20210108
 six==1.15.0
 sortedcontainers==2.4.0
 statannot==0.2.3
