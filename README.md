@@ -22,8 +22,9 @@ To install the code, please clone the repository and install the required softwa
 the **requirements.txt** file:
 
 ```
-git clone https://github.com/GVS-Lab/immune_cell_project.git
+git clone https://github.com/GVS-Lab/chromark.git
 
+cd chromark
 conda create --name icp python=3.8.10
 conda activate icp
 pip install -r requirements.txt
