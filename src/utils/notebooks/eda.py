@@ -16,17 +16,18 @@ from sklearn.metrics import (
     accuracy_score,
 )
 from sklearn.model_selection import StratifiedKFold, StratifiedGroupKFold
+from sklearn.preprocessing import StandardScaler
 from statsmodels.stats.outliers_influence import variance_inflation_factor
-from tqdm import tqdm
+from tqdm.notebook import tqdm
 
 
 def read_in_protein_dataset(
-    data_dir,
-    feature_file_path,
-    qc_result_file_path,
-    gh2ax_foci_result_file_path=None,
-    gh2ax_foci_result_image_index_col="image_index",
-    filter_samples: List[str] = None,
+        data_dir,
+        feature_file_path,
+        qc_result_file_path,
+        gh2ax_foci_result_file_path=None,
+        gh2ax_foci_result_image_index_col="image_index",
+        filter_samples: List[str] = None,
 ):
     all_features = []
     subdirs = [f.path for f in os.scandir(data_dir) if f.is_dir()]
@@ -88,8 +89,8 @@ def read_in_protein_dataset(
             )
 
         if (
-            filter_samples is None
-            or np.unique(features.loc[:, "sample"])[0] in filter_samples
+                filter_samples is None
+                or np.unique(features.loc[:, "sample"])[0] in filter_samples
         ):
             all_features.append(features)
     all_features_df = all_features[0].copy()
@@ -99,13 +100,13 @@ def read_in_protein_dataset(
 
 
 def read_in_marker_dataset(
-    data_dir,
-    feature_file_path,
-    qc_result_file_path,
-    marker_label_file_path,
-    filter_samples: List[str] = None,
-    gh2ax_foci_result_file_path=None,
-    gh2ax_foci_result_image_index_col="image_index",
+        data_dir,
+        feature_file_path,
+        qc_result_file_path,
+        marker_label_file_path,
+        filter_samples: List[str] = None,
+        gh2ax_foci_result_file_path=None,
+        gh2ax_foci_result_image_index_col="image_index",
 ):
     all_features = []
     subdirs = [f.path for f in os.scandir(data_dir) if f.is_dir()]
@@ -168,11 +169,11 @@ def read_in_marker_dataset(
                 ]
             )
 
-        marker_labels = pd.read_csv(subdir + marker_label_file_path, index_col=0,)
+        marker_labels = pd.read_csv(subdir + marker_label_file_path, index_col=0, )
         features = features.merge(marker_labels, left_index=True, right_index=True)
         if (
-            filter_samples is None
-            or np.unique(features.loc[:, "sample"])[0] in filter_samples
+                filter_samples is None
+                or np.unique(features.loc[:, "sample"])[0] in filter_samples
         ):
             all_features.append(features)
     all_features_df = all_features[0].copy()
@@ -182,7 +183,7 @@ def read_in_marker_dataset(
 
 
 def read_in_data(
-    feature_file_path: str, qc_file_path: str, sample: str, timepoint: str = "tp0"
+        feature_file_path: str, qc_file_path: str, sample: str, timepoint: str = "tp0"
 ):
     features = pd.read_csv(feature_file_path, index_col=0)
     qc_results = pd.read_csv(qc_file_path, index_col=0)
@@ -195,16 +196,16 @@ def read_in_data(
 
 
 def preprocess_data(
-    data,
-    drop_columns=[
-        "label",
-        "centroid-0",
-        "centroid-1",
-        "orientation",
-        "weighted_centroid-0",
-        "weighted_centroid-1",
-    ],
-    remove_constant_features=False,
+        data,
+        drop_columns=[
+            "label",
+            "centroid-0",
+            "centroid-1",
+            "orientation",
+            "weighted_centroid-0",
+            "weighted_centroid-1",
+        ],
+        remove_constant_features=False,
 ):
     filtered_data = data.loc[data["qc_pass"] == True]
     print(
@@ -294,14 +295,14 @@ def remove_correlated_features(data, threshold):
 
 
 def plot_feature_importance(
-    importance,
-    names,
-    model_type,
-    figsize=[6, 4],
-    cmap=["gray"],
-    n_features=10,
-    feature_color_dict=None,
-    labelsize=6,
+        importance,
+        names,
+        model_type,
+        figsize=[6, 4],
+        cmap=["gray"],
+        n_features=10,
+        feature_color_dict=None,
+        labelsize=6,
 ):
     # Create arrays from feature importance and feature names
     feature_importance = np.array(importance)
@@ -336,7 +337,7 @@ def plot_feature_importance(
 
 
 def plot_roc_for_stratified_cv(
-    X, y, n_splits, classifier, title, pos_label=None, groups=None
+        X, y, n_splits, classifier, title, pos_label=None, groups=None
 ):
     if groups is None:
         cv = StratifiedKFold(n_splits=n_splits)
@@ -415,13 +416,13 @@ def plot_roc_for_stratified_cv(
 
 
 def compute_cv_conf_mtx(
-    model,
-    n_folds,
-    features,
-    labels,
-    groups=None,
-    balance_train=False,
-    random_state=1234,
+        model,
+        n_folds,
+        features,
+        labels,
+        groups=None,
+        balance_train=False,
+        random_state=1234,
 ):
     features = np.array(features)
     labels = np.array(labels)
@@ -458,14 +459,14 @@ def compute_cv_conf_mtx(
 
 
 def get_cv_results_by_fold(
-    model,
-    features,
-    labels,
-    n_folds,
-    groups=None,
-    balance_train=False,
-    scoring=balanced_accuracy_score,
-    random_state=1234,
+        model,
+        features,
+        labels,
+        n_folds,
+        groups=None,
+        balance_train=False,
+        scoring=balanced_accuracy_score,
+        random_state=1234,
 ):
     if groups is not None:
         cv = StratifiedGroupKFold(n_splits=n_folds)
@@ -503,14 +504,14 @@ def get_cv_results_by_fold(
 
 
 def summarize_group_cv_results_by_fold(
-    model,
-    features,
-    labels,
-    groups,
-    n_folds=None,
-    balance_train=False,
-    scoring=accuracy_score,
-    random_state=1234,
+        model,
+        features,
+        labels,
+        groups,
+        n_folds=None,
+        balance_train=False,
+        scoring=accuracy_score,
+        random_state=1234,
 ):
     if n_folds is None:
         n_folds = len(np.unique(groups))
@@ -543,6 +544,11 @@ def summarize_group_cv_results_by_fold(
         test_groups = np.unique(groups[test_idx])
         test_group = "_".join(sorted(list(test_groups)))
         score = scoring(y_test, preds)
+        for c in classes:
+            if "prop_"+str(c) in result:
+                result["prop_"+str(c)].append(np.mean(preds == c))
+            else:
+                result["prop_"+str(c)] = [np.mean(preds==c)]
         avg_max_pred_prob = np.mean(np.max(pred_probs, axis=1))
         true_class_pred_probs = []
         for i in range(len(y_test)):
@@ -594,3 +600,140 @@ def get_permute_group_labels(labels, groups):
     for group in groups:
         perm_labels.append(perm_unique_group_label_dict[group])
     return perm_labels, perm_unique_group_label_dict, unique_group_label_dict
+
+
+def run_nuclei_ablation_study_cv(
+    estimator,
+    features,
+    labels,
+    groups,
+    n_repeats=5,
+    balance_train=True,
+    scale_features=True,
+    n_folds=10,
+    random_state=1234,
+):
+    np.random.seed(random_state)
+
+    rus = RandomUnderSampler(random_state=random_state)
+
+    if scale_features:
+        sc = StandardScaler()
+        features = pd.DataFrame(
+            sc.fit_transform(features), index=features.index, columns=features.columns
+        )
+
+    features = np.array(features)
+    labels = np.array(labels)
+    groups = np.array(groups)
+
+    results = {"n_nuclei": [], "frac_nuclei": [], "sample": [], "lopo_accuracy": []}
+    for i in tqdm(np.arange(0.1, 1.1, 0.1), position=0):
+        for j in tqdm(range(n_repeats), position=1):
+            skf = StratifiedGroupKFold(n_splits=n_folds)
+            accs = []
+            for train_index, test_index in skf.split(features, labels, groups):
+                X_train, X_test = features[train_index], features[test_index]
+                y_train, y_test = labels[train_index], labels[test_index]
+
+                train_groups = groups[train_index]
+
+                n_nuclei = min(list(dict(Counter(train_groups)).values()))
+                unique_train_groups = list(np.unique(train_groups))
+                n_sample_dict = dict(
+                    zip(
+                        unique_train_groups,
+                        [int(n_nuclei * i)] * len(unique_train_groups),
+                    )
+                )
+                #                 print(Counter(y_train))
+                if i < 1:
+                    rus2 = RandomUnderSampler(sampling_strategy=n_sample_dict)
+
+                    sample_idc = np.arange(0, len(X_train)).reshape((-1, 1))
+                    sample_idc, sample_train_groups = rus2.fit_resample(
+                        sample_idc, train_groups
+                    )
+
+                    X_train = X_train[sample_idc.ravel()]
+                    y_train = y_train[sample_idc.ravel()]
+
+                #                 print(Counter(y_train))
+
+                if balance_train:
+                    X_train, y_train = rus.fit_resample(X_train, y_train)
+
+                estimator.fit(X_train, y_train)
+                acc = accuracy_score(y_test, estimator.predict(X_test))
+                accs.append(acc)
+
+            results["n_nuclei"].append(n_nuclei)
+            results["frac_nuclei"].append(i)
+            results["sample"].append(j)
+            results["lopo_accuracy"].append(np.mean(accs))
+
+    results = pd.DataFrame(results)
+    return results
+
+
+def run_patient_ablation_study_cv(estimator, features, labels, groups, n_repeats=5, balance_train=True,
+                                  scale_features=True, n_folds=10, random_state=1234):
+    np.random.seed(random_state)
+    classes = np.unique(labels)
+
+    rus = RandomUnderSampler(random_state=random_state)
+
+    if scale_features:
+        sc = StandardScaler()
+        features = pd.DataFrame(
+            sc.fit_transform(features), index=features.index, columns=features.columns
+        )
+
+    features = np.array(features)
+    labels = np.array(labels)
+    groups = np.array(groups)
+
+    patient_label_dict = {}
+    for c in classes:
+        patient_label_dict[c] = np.unique(groups[labels == c])
+
+    results = {"n_train_patients": [], "sample": [], "lopo_accuracy": []}
+    for i in tqdm(range(1, len(patient_label_dict[classes[0]])), position=0):
+        for j in tqdm(range(n_repeats), position=1):
+            skf = StratifiedGroupKFold(n_splits=n_folds)
+            accs = []
+            for train_index, test_index in skf.split(features, labels, groups):
+                X_train, X_test = features[train_index], features[test_index]
+                y_train, y_test = labels[train_index], labels[test_index]
+
+
+                train_groups = groups[train_index]
+                selected_train_patients = []
+                for c in classes:
+                    class_train_patients = np.unique(train_groups[y_train == c])
+                    selected_train_patients.extend(
+                            list(np.random.choice(class_train_patients, size=i, replace=False)))
+
+                train_mask = []
+                for train_group in train_groups:
+                    train_mask.append(train_group in selected_train_patients)
+                X_train = X_train[train_mask]
+                y_train = y_train[train_mask]
+
+                if balance_train:
+                    X_train, y_train = rus.fit_resample(X_train, y_train)
+
+                estimator.fit(X_train, y_train)
+                acc = accuracy_score(y_test, estimator.predict(X_test))
+                accs.append(acc)
+
+            #                 if j == 0:
+            #                     print(Counter(train_groups[train_mask]))
+            #                     print(Counter(y_test))
+
+            results["n_train_patients"].append(i)
+            results["sample"].append(j)
+            results["lopo_accuracy"].append(np.mean(accs))
+
+    results = pd.DataFrame(results)
+    return results

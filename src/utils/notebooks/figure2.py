@@ -76,14 +76,21 @@ def plot_joint_markers_ctrl_cancer(
     palette=None,
     plot_type="violin",
     figsize=[6, 3],
+    scale_to_control=False
 ):
     all_markers = []
     boxpairs = []
     labels = np.array(data.loc[:, label_col])
     for marker in markers:
-        marker_data = np.array(data.loc[:, marker])
-        marker_data = MinMaxScaler().fit_transform(marker_data.reshape(-1, 1))
-        marker_data = pd.DataFrame(marker_data, columns=["norm_value"])
+        if scale_to_control:
+            marker_data = np.array(data.loc[:, marker])
+            mean_control = np.mean(marker_data[labels=="Control"])
+            marker_data = marker_data/ mean_control
+            marker_data = pd.DataFrame(marker_data, columns=["norm_value"])
+        else:
+            marker_data = np.array(data.loc[:, marker])
+            marker_data = MinMaxScaler().fit_transform(marker_data.reshape(-1, 1))
+            marker_data = pd.DataFrame(marker_data, columns=["norm_value"])
         marker_data["condition"] = labels
         marker_data["marker"] = marker
         all_markers.append(marker_data)

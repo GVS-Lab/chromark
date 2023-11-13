@@ -1,4 +1,5 @@
 import os
+from collections import Counter
 
 import matplotlib.cm as cm
 import matplotlib.colors as mcolors
@@ -11,6 +12,8 @@ from scipy.stats import ttest_ind
 from skimage.io import imread
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import StratifiedGroupKFold, StratifiedKFold, cross_val_score
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from statannotations.Annotator import Annotator
 from statsmodels.stats.multitest import fdrcorrection
@@ -54,13 +57,13 @@ def get_chrometric_data(data, proteins, exclude_dna_int=True, exclude_features=N
 
 
 def get_random_images(
-    data,
-    image_file_path,
-    data_dir_col="data_dir",
-    n_images=36,
-    seed=1234,
-    file_ending=".tif",
-    file_name_col="file_name",
+        data,
+        image_file_path,
+        data_dir_col="data_dir",
+        n_images=36,
+        seed=1234,
+        file_ending=".tif",
+        file_name_col="file_name",
 ):
     images = []
     np.random.seed(seed)
@@ -100,14 +103,14 @@ def padding(array, height, width):
 
 
 def plot_montage(
-    images,
-    cmap="viridis",
-    nrows=6,
-    ncols=6,
-    figsize=[12, 12],
-    pad_size=144,
-    mask_nuclei=False,
-    channel_first=True,
+        images,
+        cmap="viridis",
+        nrows=6,
+        ncols=6,
+        figsize=[12, 12],
+        pad_size=144,
+        mask_nuclei=False,
+        channel_first=True,
 ):
     fig, ax = plt.subplots(figsize=figsize, nrows=nrows, ncols=ncols)
     ax = ax.flatten()
@@ -149,6 +152,7 @@ def get_tsne_embs(data, scale_data=True, seed=1234):
     )
     return embs
 
+
 def get_pca_embs(data, scale_data=True, seed=1234, return_pca=True):
     if scale_data:
         sc = StandardScaler()
@@ -160,22 +164,24 @@ def get_pca_embs(data, scale_data=True, seed=1234, return_pca=True):
         random_state=seed,
     )
     embs = pd.DataFrame(
-        mapper.fit_transform(data), columns=["PC {}".format(i+1) for i in range(mapper.n_components_)], index=data.index
+        mapper.fit_transform(data), columns=["PC {}".format(i + 1) for i in range(mapper.n_components_)],
+        index=data.index
     )
     if return_pca:
         return embs, mapper
     else:
         return embs
 
+
 def get_cv_conf_mtx(
-    estimator,
-    features,
-    labels,
-    groups=None,
-    scale_features=True,
-    n_folds=10,
-    order=None,
-    balance_train=False,
+        estimator,
+        features,
+        labels,
+        groups=None,
+        scale_features=True,
+        n_folds=10,
+        order=None,
+        balance_train=False,
 ):
     if scale_features:
         sc = StandardScaler()
@@ -198,15 +204,15 @@ def get_cv_conf_mtx(
 
 
 def plot_feature_importance_for_estimator(
-    estimator,
-    features,
-    labels,
-    scale_features=True,
-    cmap=["gray"],
-    figsize=[6, 4],
-    n_features=10,
-    feature_color_dict=None,
-    labelsize=6,
+        estimator,
+        features,
+        labels,
+        scale_features=True,
+        cmap=["gray"],
+        figsize=[6, 4],
+        n_features=10,
+        feature_color_dict=None,
+        labelsize=6,
 ):
     if scale_features:
         sc = StandardScaler()
@@ -263,22 +269,22 @@ def find_markers(data, labels):
 
 
 def plot_marker_distribution(
-    data,
-    marker,
-    label_col,
-    box_pairs,
-    figsize=[6, 4],
-    hue=None,
-    order=None,
-    hue_order=None,
-    palette=None,
-    quantiles=None,
-    cut=2,
-    plot_type="violin",
-    test="t-test_welch",
-    ax=None,
-    fig=None,
-    split=None,
+        data,
+        marker,
+        label_col,
+        box_pairs,
+        figsize=[6, 4],
+        hue=None,
+        order=None,
+        hue_order=None,
+        palette=None,
+        quantiles=None,
+        cut=2,
+        plot_type="violin",
+        test="t-test_welch",
+        ax=None,
+        fig=None,
+        split=None,
 ):
     if fig is None or ax is None:
         fig, ax = plt.subplots(figsize=figsize)
@@ -286,7 +292,7 @@ def plot_marker_distribution(
         data = data.loc[
             (data.loc[:, marker] < np.quantile(data.loc[:, marker], q=quantiles[1]))
             & (data.loc[:, marker] > np.quantile(data.loc[:, marker], q=quantiles[0]))
-        ]
+            ]
     if plot_type == "violin":
         ax = sns.violinplot(
             data=data,
@@ -301,26 +307,8 @@ def plot_marker_distribution(
             cut=cut,
             split=split,
             inner="box",
-            # saturation=0.4,
             linewidth=1,
         )
-        # sns.boxplot(
-        #     x=label_col,
-        #     y=marker,
-        #     data=data,
-        #     hue=hue,
-        #     palette=palette,
-        #     # palette=["lightgrey"],
-        #     width=0.08,
-        #     fliersize=0.0,
-        #     linewidth=0.6,
-        #     dodge=False,
-        #     order=order,
-        #     hue_order=hue_order,
-        #     boxprops={"zorder": 2},
-        #     ax=ax,
-        #     showcaps=False,
-        # )
     elif plot_type == "bar":
         ax = sns.barplot(
             data=data,
@@ -359,17 +347,17 @@ def plot_marker_distribution(
 
 
 def plot_cancer_type_markers_dist(
-    data,
-    markers,
-    marker_labels,
-    quantiles=None,
-    cut=2,
-    plot_type="violin",
-    palette=None,
-    figsize=[4, 4],
-    hue=None,
-    hue_order=None,
-    test="t-test_ind",
+        data,
+        markers,
+        marker_labels,
+        quantiles=None,
+        cut=2,
+        plot_type="violin",
+        palette=None,
+        figsize=[4, 4],
+        hue=None,
+        hue_order=None,
+        test="t-test_ind",
 ):
     for i in range(len(markers)):
         fig, ax = plot_marker_distribution(
@@ -398,17 +386,17 @@ def plot_cancer_type_markers_dist(
 
 
 def plot_timepoint_markers_dist(
-    data,
-    markers,
-    marker_labels,
-    quantiles=None,
-    cut=2,
-    plot_type="violin",
-    palette=None,
-    figsize=[4, 4],
-    hue=None,
-    hue_order=None,
-    test="t-test_ind",
+        data,
+        markers,
+        marker_labels,
+        quantiles=None,
+        cut=2,
+        plot_type="violin",
+        palette=None,
+        figsize=[4, 4],
+        hue=None,
+        hue_order=None,
+        test="t-test_ind",
 ):
     for i in range(len(markers)):
         fig, ax = plot_marker_distribution(
@@ -417,7 +405,7 @@ def plot_timepoint_markers_dist(
             marker=markers[i],
             label_col="timepoint",
             order=["prior", "during", "end"],
-            box_pairs=[("prior", "during"), ("prior", "end"), ("during", "end"),],
+            box_pairs=[("prior", "during"), ("prior", "end"), ("during", "end"), ],
             quantiles=quantiles,
             cut=cut,
             plot_type=plot_type,
@@ -433,14 +421,14 @@ def plot_timepoint_markers_dist(
 
 
 def plot_joint_markers_cancer_types(
-    data,
-    markers,
-    marker_labels,
-    label_col="condition",
-    cut=0,
-    palette=None,
-    plot_type="violin",
-    figsize=[6, 3],
+        data,
+        markers,
+        marker_labels,
+        label_col="condition",
+        cut=0,
+        palette=None,
+        plot_type="violin",
+        figsize=[6, 3],
 ):
     all_markers = []
     boxpairs = []
@@ -476,15 +464,15 @@ def plot_joint_markers_cancer_types(
 
 
 def plot_lopo_cv_results_by_class(
-    data,
-    classes,
-    x="majority_class",
-    y="score",
-    hue="condition",
-    figsize=[6, 4],
-    test="Mann-Whitney",
-    pval_text_format="star",
-    alpha=0.5,
+        data,
+        classes,
+        x="majority_class",
+        y="score",
+        hue="condition",
+        figsize=[6, 4],
+        test="Mann-Whitney",
+        pval_text_format="star",
+        alpha=0.5,
 ):
     fig, ax = plt.subplots(figsize=figsize)
     ax = sns.stripplot(
@@ -542,16 +530,16 @@ def plot_lopo_cv_results_by_class(
 
 
 def plot_lopo_cv_results(
-    data,
-    x="condition",
-    hue="avg_true_class_pred_prob",
-    y="score",
-    figsize=[6, 4],
-    test="Mann-Whitney",
-    pval_text_format="star",
-    alpha=0.5,
-    draw_cbar=True,
-    cbar_label="",
+        data,
+        x="condition",
+        hue="avg_true_class_pred_prob",
+        y="score",
+        figsize=[6, 4],
+        test="Mann-Whitney",
+        pval_text_format="star",
+        alpha=0.5,
+        draw_cbar=True,
+        cbar_label="",
 ):
     fig, ax = plt.subplots(figsize=figsize)
     ax = sns.stripplot(
@@ -573,7 +561,7 @@ def plot_lopo_cv_results(
     )
     box_pairs = [("Observed", "Permuted")]
 
-    annotator = Annotator(ax, box_pairs, data=data, x=x, y=y, plot="boxplot",)
+    annotator = Annotator(ax, box_pairs, data=data, x=x, y=y, plot="boxplot", )
     annotator.configure(
         test=test,
         text_format=pval_text_format,
@@ -596,17 +584,17 @@ def plot_lopo_cv_results(
 
 
 def plot_lopo_cv_results_timepoints(
-    data,
-    x="tp",
-    hue="majority_class",
-    y="score",
-    order=None,
-    figsize=[6, 4],
-    test="Mann-Whitney",
-    pval_text_format="star",
-    alpha=0.5,
-    class_palette=None,
-    box_palette=None,
+        data,
+        x="tp",
+        hue="majority_class",
+        y="score",
+        order=None,
+        figsize=[6, 4],
+        test="Mann-Whitney",
+        pval_text_format="star",
+        alpha=0.5,
+        class_palette=None,
+        box_palette=None,
 ):
     fig, ax = plt.subplots(figsize=figsize)
     ax = sns.stripplot(
