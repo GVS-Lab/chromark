@@ -41,8 +41,8 @@ The data to rerun the results can be obtained from the authors upon request and 
 ## 1. Data preprocessing (Optional)
 The full preprocessing pipeline including the image segmentation in 2D and 3D as well as the feature extraction and (if applicable) the cell type classification can be run via the following commands:
 ```
-python run.py --config config/full_pipeline/config_pbmc_full.yml
-python run.py --config config/full_pipeline/config_pbmc_full_marker.yml
+python scripts/run.py --config config/full_pipeline/config_pbmc_full.yml
+python scripts/run.py --config config/full_pipeline/config_pbmc_full_marker.yml
 ```
 Note that the config file needs to be adjusted such that the correct file locations are specified.
 While all other parameters are recommended to be kept the channel parameters should also be adjusted to reflect the channels present in the images that are to be preprocessed.
