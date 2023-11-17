@@ -2,7 +2,7 @@
 
 The repository contains the code used to run the analyses presented in our publication:
 
-> [**Single-cell imaging-AI based chromatin biomarkers for diagnosis and therapy evaluation in tumor patients using liquid biopsies (Under review)**]()
+> [**Single-cell imaging-AI based chromatin biomarkers for diagnosis and therapy evaluation in tumor patients using liquid biopsies (Accepted in npj Precision Oncology)**]()
 
 <p align="center" width="100%">
   <b>Chromatin organization of PBMCs reflects the presence of tumor signals</b> <br>
