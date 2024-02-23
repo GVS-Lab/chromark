@@ -2,7 +2,7 @@
 
 The repository contains the code used to run the analyses presented in our publication:
 
-> [**Single-cell imaging-AI based chromatin biomarkers for diagnosis and therapy evaluation in tumor patients using liquid biopsies (Accepted in npj Precision Oncology)**]()
+> [**Single-cell imaging-AI based chromatin biomarkers for diagnosis and therapy evaluation in tumor patients using liquid biopsies (Published in npj Precision Oncology)**](https://www.nature.com/articles/s41698-023-00484-8)
 
 <p align="center" width="100%">
   <b>Chromatin organization of PBMCs reflects the presence of tumor signals</b> <br>
@@ -66,5 +66,17 @@ navigate to the notebook and run all cells.
 If you use any of the code or resources provided here please make sure to reference the required software libraries if
 needed and also cite our work:
 
-**TO BE ADDED**
+```
+@article{challa2023imaging,
+  title={Imaging and AI based chromatin biomarkers for diagnosis and therapy evaluation from liquid biopsies},
+  author={Challa, Kiran and Paysan, Daniel and Leiser, Dominic and Sauder,
+          Nadia and Weber, Damien C and Shivashankar, GV},
+  journal={NPJ precision oncology},
+  volume={7},
+  number={1},
+  pages={135},
+  year={2023},
+  publisher={Nature Publishing Group UK London}
+}
+```
 ---
