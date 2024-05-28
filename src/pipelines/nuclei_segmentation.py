@@ -50,8 +50,8 @@ class SegmentationPipeline(object):
             channel_img = self.raw_image[:, c, :, :].astype(np.float32)
             normalized_raw_image[:, c, :, :] = np.array(
                 (
-                    (channel_img - channel_img.min()) / channel_img.max()
-                    - channel_img.min()
+                    (channel_img - channel_img.min()) / (channel_img.max()
+                    - channel_img.min())
                 )
                 * ((2 ** 16) - 1),
                 dtype=np.uint16,
